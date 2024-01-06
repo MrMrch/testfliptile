@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,40 +68,60 @@
             const tileInner = document.createElement('div');
             tileInner.className = 'tile-inner';
 
-            const tileFront = document.createElement('div');
-            tileFront.className = 'tile-front';
+            const tileEven = document.createElement('div');
+            tileEven.className = 'tile-front';
 
-            const tileBack = document.createElement('div');
-            tileBack.className = 'tile-back';
+            const tileOdd = document.createElement('div');
+            tileOdd.className = 'tile-back';
 
-            let frontValue = 0;
-            let backValue = 1; // Start with 1 on the back
+            let evenValue = 0;
+            let oddValue = 1;
 
             const updateDisplay = () => {
-                tileFront.innerHTML = frontValue > 0 ? frontValue : '';
-                tileBack.innerHTML = backValue > 0 ? backValue : '';
+                tileEven.innerHTML = evenValue > 0 ? evenValue : '';
+                tileOdd.innerHTML = oddValue > 0 ? oddValue : '';
             };
 
             updateDisplay();
 
-            tileInner.appendChild(tileFront);
-            tileInner.appendChild(tileBack);
+            tileInner.appendChild(tileEven);
+            tileInner.appendChild(tileOdd);
             tile.appendChild(tileInner);
 
-        tile.addEventListener('click', () => {
-            tileInner.style.transform = tile.classList.contains('flipped') ? '' : 'rotateY(180deg)';
-            tile.classList.toggle('flipped');
+            tile.addEventListener('click', () => {
+                tileInner.style.transform = tileInner.style.transform === 'rotateY(180deg)' ? '' : 'rotateY(180deg)';
+                
+                setTimeout(() => {
+                    if(tileInner.style.transform === 'rotateY(180deg)') {
+                        // Flipping to odd
+                        evenValue += 2;
+                    } else {
+                        // Flipping to even
+                        oddValue += 2;
+                        if(evenValue === 4) {
+                            triggerExplosion(tileInner, evenValue);
+                        }
+                    }
+                    updateDisplay();
+                }, 400); // Delay to match the flip animation
+            });
 
-            // Switch front and back values and increment the new back
-            setTimeout(() => {
-                [frontValue, backValue] = [backValue, frontValue];
-                backValue++;  // Increment the new back
-                updateDisplay();
-            }, 400); // Delay to match the flip animation
-        });
-
-        gameBoard.appendChild(tile);
+            gameBoard.appendChild(tile);
         }
+
+        function triggerExplosion(tileInner, evenValue) {
+            // Explosion animation
+            tileInner.style.transition = 'transform 0.8s';
+            tileInner.style.transform = 'rotateY(360deg)';
+
+            setTimeout(() => {
+                evenValue = 0; // Reset even value
+                tileInner.style.transition = 'transform 0.8s';
+                tileInner.style.transform = 'rotateY(0deg)';
+            }, 800); // Match this timeout with the duration of the explosion animation
+        }
+        
+        
     </script>
 </body>
 </html>
