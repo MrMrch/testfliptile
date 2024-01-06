@@ -1,0 +1,108 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Board with Switching Roles</title>
+<style>
+    #gameBoard {
+        display: grid;
+        grid-template-columns: repeat(8, 50px);
+        grid-template-rows: repeat(8, 50px);
+        gap: 2px;
+        background-color: #bdbbc4;
+        padding: 10px;
+        border-radius: 10px;
+        width: fit-content;
+        margin: auto;
+    }
+
+    .tile {
+        width: 50px;
+        height: 50px;
+        cursor: pointer;
+        perspective: 1000px;
+    }
+
+    .tile-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+    }
+
+    .tile-front, .tile-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        border-radius: 5px;
+    }
+
+    .tile-front {
+        background-color: #fffad6;
+    }
+
+    .tile-back {
+        background-color: #2E3440;
+        color: white;
+        transform: rotateY(180deg);
+    }
+</style>
+</head>
+<body>
+    <div id="gameBoard"></div>
+    <script>
+        const gameBoard = document.getElementById('gameBoard');
+
+        for (let i = 0; i < 64; i++) {
+            const tile = document.createElement('div');
+            tile.className = 'tile';
+
+            const tileInner = document.createElement('div');
+            tileInner.className = 'tile-inner';
+
+            const tileFront = document.createElement('div');
+            tileFront.className = 'tile-front';
+
+            const tileBack = document.createElement('div');
+            tileBack.className = 'tile-back';
+
+            let frontValue = 0;
+            let backValue = 1; // Start with 1 on the back
+
+            const updateDisplay = () => {
+                tileFront.innerHTML = frontValue > 0 ? frontValue : '';
+                tileBack.innerHTML = backValue > 0 ? backValue : '';
+            };
+
+            updateDisplay();
+
+            tileInner.appendChild(tileFront);
+            tileInner.appendChild(tileBack);
+            tile.appendChild(tileInner);
+
+        tile.addEventListener('click', () => {
+            tileInner.style.transform = tile.classList.contains('flipped') ? '' : 'rotateY(180deg)';
+            tile.classList.toggle('flipped');
+
+            // Switch front and back values and increment the new back
+            setTimeout(() => {
+                [frontValue, backValue] = [backValue, frontValue];
+                backValue++;  // Increment the new back
+                updateDisplay();
+            }, 400); // Delay to match the flip animation
+        });
+
+        gameBoard.appendChild(tile);
+        }
+    </script>
+</body>
+</html>
